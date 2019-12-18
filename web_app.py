@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 
 
 import nltk
-nltk.download('stopwords')
+# nltk.download('stopwords')
 
 
 from embedding import Word2Vec
