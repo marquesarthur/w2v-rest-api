@@ -3,3 +3,4 @@ gensim
 nltk
 flask
 scikit-learn
+Werkzeug
