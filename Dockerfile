@@ -1,16 +1,12 @@
 # pull base image
-FROM debian:jessie
-
-FROM msarthur/semafor-base:latest
+FROM alpine:3.5
+FROM python:3
 
 VOLUME /var/log/docker
 
-COPY . /tmp/src
+COPY . /tmp/app
 
-WORKDIR /tmp/src/
-
-RUN apk --update add supervisor curl python uwsgi \
-    bash nginx python-dev py-pip
+WORKDIR /tmp/app/
 
 RUN pip install -r requirements.txt
 
@@ -18,4 +14,4 @@ ENTRYPOINT [ "python" ]
 
 EXPOSE 5001
 
-CMD ["web_app.py"]
+CMD ["app.py"]

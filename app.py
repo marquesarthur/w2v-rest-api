@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
 
 
+print("Loading stopwords")
+
 import nltk
-# nltk.download('stopwords')
+nltk.download('stopwords')
+nltk.download('punkt')
 
 
 from embedding import Word2Vec
@@ -34,14 +37,14 @@ def clean_text(text):
     return text_return
 
 
-
+print("Loading word2vec")
 w2v = Word2Vec()
 w2v.load(gensim_pre_trained_model="word2vec-google-news-300")
 
 
 
 
-
+print("Init flask")
 app = Flask(__name__)
 
 @app.route("/", methods=['GET'])
@@ -67,11 +70,11 @@ def similarity_route():
         response['sim'] = sim
         return jsonify(response)
     except Exception as err:
-        response['err'] = err.message
+        response['err'] = str(err)
         return jsonify(response)
 
 
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5001)
 
