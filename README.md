@@ -78,7 +78,7 @@ Response should look like:
    "a" : "Have you ever tried to used the method string.split(\"hello world\")",
    "b" : "try using the string.split method",
    "err" : null,
-   "sim" : "0.54"
+   "sim" : "0.54513955"
 }
 ``` 
 
