@@ -32,6 +32,7 @@ To convert a sentence, we check whether a word exists in the model vocabulary. I
 The final vector is computing summing all vectors of the words that exist in the model and diving the number of words that exist in the model.
 The division assists in accounting for lengthy sentences. 
 
+The final implementation uses [Aerim Kim](https://www.linkedin.com/in/aerinykim/)'s [python code](https://bitbucket.org/yunazzang/aiwiththebest_byor/src/master/)
 
 ## Setup
 
