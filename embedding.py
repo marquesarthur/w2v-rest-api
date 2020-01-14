@@ -11,6 +11,57 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import word_tokenize
 
+import numpy as np
+import math
+from scipy.spatial import distance
+
+from random import sample
+import sys
+from nltk.corpus import stopwords
+
+
+def ConvertVectorSetToVecAverageBased(vectorSet, ignore=None):
+    if ignore is None:
+        ignore = []
+
+    if len(ignore) == 0:
+        return np.mean(vectorSet, axis=0)
+    else:
+        return np.dot(np.transpose(vectorSet), ignore) / sum(ignore)
+
+
+def PhraseToVec(phrase, model=None):
+    if not model:
+        raise Exception("No pre-trained model defined")
+    cachedStopWords = stopwords.words("english")
+    phrase = phrase.lower()
+    wordsInPhrase = [word for word in phrase.split() if word not in cachedStopWords]
+    vectorSet = []
+    for aWord in wordsInPhrase:
+        try:
+            wordVector = model[aWord]
+            vectorSet.append(wordVector)
+        except:
+            pass
+    return ConvertVectorSetToVecAverageBased(vectorSet)
+
+
+# https://bitbucket.org/yunazzang/aiwiththebest_byor/src/master/PhraseSimilarity.py
+class PhraseVector(object):
+    def __init__(self, phrase, model=None):
+        self.vector = PhraseToVec(phrase, model=model)
+
+    def similarity(self, otherPhraseVec):
+        cosine_similarity = np.dot(self.vector, otherPhraseVec) / (
+                    np.linalg.norm(self.vector) * np.linalg.norm(otherPhraseVec))
+        try:
+            if math.isnan(cosine_similarity):
+                cosine_similarity = 0
+        except:
+            cosine_similarity = 0
+        return cosine_similarity
+
+
 
 class Word2Vec(object):
 
@@ -31,38 +82,11 @@ class Word2Vec(object):
         if not self.model:
             raise Exception("You cannot use a similarity function without a trained model")
 
-        x_vector = self.avg_sentence_vector(x)
-        y_vector = self.avg_sentence_vector(y)
+        x_vector = PhraseVector(x, model=self.model)
+        y_vector = PhraseVector(y, model=self.model)
 
-        result = cosine_similarity(x_vector.reshape(1, -1), y_vector.reshape(1, -1))
-        return result[0].tolist()[0]  # there must be a better way to do this
-
-    def avg_sentence_vector(self, sentence):
-        """
-        Obtains the vector representation of a sentence.
-        A vector representation of a sentence is computed based on the sum of all the words in the sentence that exists in the model vocabulary.
-        The vector is then normalized dividing the summation by the number of words in the sentence.
-
-        :param sentence: sentence containing words to be converted into a vector
-        :return: vectorized representation of the sentence
-        """
-
-        n_features = self.model.vector_size
-        sentence_vec = np.zeros((n_features,), dtype="float32")
-
-        nwords = 0
-        for word in word_tokenize(sentence):
-            if word not in self.model:
-                sentence_vec = np.add(sentence_vec, np.zeros((n_features,), dtype="float32"))
-            else:
-                sentence_vec = np.add(sentence_vec, self.model[word])
-
-            nwords += 1
-
-        if nwords > 0:
-            sentence_vec = np.divide(sentence_vec, nwords)
-
-        return sentence_vec
+        result = x_vector.similarity(y_vector.vector)
+        return result
 
     def load(self, gensim_pre_trained_model="word2vec"): # fasttext-wiki-news-subwords-300
         start = time.time()
