@@ -77,8 +77,10 @@ Response should look like:
    "a" : "Have you ever tried to used the method string.split(\"hello world\")",
    "b" : "try using the string.split method",
    "err" : null,
-   "sim" : 0.777944326400757
+   "sim" : "0.54"
 }
 ``` 
+
+You can also run the [test file](test.py) and test the API programmatically
 
 # More models and implementations in the near future !!!
