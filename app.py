@@ -45,5 +45,26 @@ def similarity_route():
         response['err'] = str(err)
         return jsonify(response)
 
+
+@app.route("/w2v/embeddings", methods=['GET'])
+def embedding_route():
+    response = {
+        "text": None,
+        "embeddings": None,
+        "err": None
+    }
+    try:
+        a = request.args.get("txt")
+        x = clean_text(a)
+
+        response['text'] = a
+        response['embeddings'] = str(w2v.vector(x))
+
+        return jsonify(response)
+    except Exception as err:
+        response['err'] = str(err)
+        return jsonify(response)
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5001)

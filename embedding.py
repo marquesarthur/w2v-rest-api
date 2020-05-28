@@ -3,21 +3,15 @@
 
 
 import logging
+import math
 import time
 
 import gensim.downloader as api
 import numpy as np
-# http://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html
-from sklearn.metrics.pairwise import cosine_similarity
-from nltk.tokenize import word_tokenize
-
-import numpy as np
-import math
-from scipy.spatial import distance
-
-from random import sample
-import sys
 from nltk.corpus import stopwords
+
+
+# http://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html
 
 
 def ConvertVectorSetToVecAverageBased(vectorSet, ignore=None):
@@ -53,14 +47,13 @@ class PhraseVector(object):
 
     def similarity(self, otherPhraseVec):
         cosine_similarity = np.dot(self.vector, otherPhraseVec) / (
-                    np.linalg.norm(self.vector) * np.linalg.norm(otherPhraseVec))
+                np.linalg.norm(self.vector) * np.linalg.norm(otherPhraseVec))
         try:
             if math.isnan(cosine_similarity):
                 cosine_similarity = 0
         except:
             cosine_similarity = 0
         return cosine_similarity
-
 
 
 class Word2Vec(object):
@@ -88,7 +81,11 @@ class Word2Vec(object):
         result = x_vector.similarity(y_vector.vector)
         return result
 
-    def load(self, gensim_pre_trained_model="word2vec"): # fasttext-wiki-news-subwords-300
+    def vector(self, x):
+        x_vector = PhraseVector(x, model=self.model)
+        return x_vector.vector
+
+    def load(self, gensim_pre_trained_model="word2vec"):  # fasttext-wiki-news-subwords-300
         start = time.time()
         logging.info("Loading model")
         self.model = api.load(gensim_pre_trained_model)
