@@ -6,6 +6,8 @@ VOLUME /var/log/docker
 
 COPY . /tmp/app
 
+COPY SO_vectors_200.bin /tmp/app
+
 WORKDIR /tmp/app/
 
 RUN pip install -r requirements.txt

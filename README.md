@@ -48,6 +48,7 @@ docker pull msarthur/w2v-rest:latest
 
 git clone git@github.com:marquesarthur/w2v-rest-api.git
 cd w2v-rest-api
+wget -O SO_vectors_200.bin https://zenodo.org/record/1199620/files/SO_vectors_200.bin
 docker build -t msarthur/w2v-rest .
 ```
 
@@ -61,6 +62,8 @@ docker push msarthur/w2v-rest:latest
 ___
 
 ## RUN
+
+Remember to remove old containers `docker rm w2v-rest`
 
 ```shell script
 docker run --name w2v-rest -p 5001:5001 msarthur/w2v-rest
@@ -84,4 +87,12 @@ Response should look like:
 
 You can also run the [test file](test.py) and test the API programmatically
 
-# More models and implementations in the near future !!!
+
+## Currently supported models
+
+* SO_vectors_200.bin - see [Word Embeddings for the Software Engineering Domain](https://zenodo.org/record/1199620#.YFEFlv4TGhg) `default`
+* word2vec-google-news-300 - requires tweaking `app.py`, look for a `FIXME` tag
+
+*note 1* : Ideally, all models could be loaded in memory at different endpoints. Nonetheless, this requires a significant amount of computational resources. I don't have these, so I made the image only load the `default` model
+
+*note 2* : More models and implementations in the near future !!!

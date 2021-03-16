@@ -24,8 +24,6 @@ def clean_text(text):
     stops = set(stopwords.words("english"))
     word_filter = [w for w in words if not w in stops and len(w) >= 3]
     text_return = " ".join(word_filter)
-
     for c in string.punctuation:
         text_return = text.replace(c, "")
-
     return text_return

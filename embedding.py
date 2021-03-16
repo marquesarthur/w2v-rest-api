@@ -5,10 +5,12 @@
 import logging
 import math
 import time
+import os
 
 import gensim.downloader as api
 import numpy as np
 from nltk.corpus import stopwords
+from gensim.models.keyedvectors import KeyedVectors
 
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html
@@ -17,7 +19,6 @@ from nltk.corpus import stopwords
 def ConvertVectorSetToVecAverageBased(vectorSet, ignore=None):
     if ignore is None:
         ignore = []
-
     if len(ignore) == 0:
         return np.mean(vectorSet, axis=0)
     else:
@@ -85,10 +86,49 @@ class Word2Vec(object):
         x_vector = PhraseVector(x, model=self.model)
         return x_vector.vector
 
-    def load(self, gensim_pre_trained_model="word2vec"):  # fasttext-wiki-news-subwords-300
+    def load(self, gensim_pre_trained_model="word2vec"):
         start = time.time()
         logging.info("Loading model")
-        self.model = api.load(gensim_pre_trained_model)
+        self.model = api.load(gensim_pre_trained_model) # model = api.load("word2vec-google-news-300")
+        end = time.time()
+        logging.info(">> model loaded")
+        logging.info(">> %s" % (end - start))
+
+
+class SOWord2Vec(object):
+
+    def __init__(self):
+        self.model = None
+
+    def similarity(self, x, y):
+        """
+        Computes the cosine similarity of two sentences.
+        First, each sentence is converted into its normalized length vector representation.
+        Then, the cosine similarity between sentences vectors are computed.
+        Uses sklearn cosine similarity function, which works with both dense and sparse vectors.
+
+        For more details, see:
+            https://datascience.stackexchange.com/questions/23969/sentence-similarity-prediction
+            http://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html
+        """
+        if not self.model:
+            raise Exception("You cannot use a similarity function without a trained model")
+
+        x_vector = PhraseVector(x, model=self.model)
+        y_vector = PhraseVector(y, model=self.model)
+
+        result = x_vector.similarity(y_vector.vector)
+        return result
+
+    def vector(self, x):
+        x_vector = PhraseVector(x, model=self.model)
+        return x_vector.vector
+
+    def load(self, file_name="SO_vectors_200.bin"):
+        start = time.time()
+        file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_name)
+        logging.info(f"Loading model from {file_path}")
+        self.model = KeyedVectors.load_word2vec_format(file_path, binary=True)
         end = time.time()
         logging.info(">> model loaded")
         logging.info(">> %s" % (end - start))

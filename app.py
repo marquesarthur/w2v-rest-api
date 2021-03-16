@@ -8,11 +8,17 @@ from util import clean_text
 nltk.download('stopwords')
 nltk.download('punkt')
 
-from embedding import Word2Vec
+from embedding import Word2Vec, SOWord2Vec
 
-print("Loading word2vec")
-w2v = Word2Vec()
-w2v.load(gensim_pre_trained_model="word2vec-google-news-300")
+print("Loading StackOverflow word2vec")
+w2v = SOWord2Vec()
+w2v.load(file_name="SO_vectors_200.bin")
+
+# FIXME: uncomment for standard word2vec-google-news-300
+# print("Loading Google News word2vec")
+# w2v = Word2Vec()
+# w2v.load(gensim_pre_trained_model="word2vec-google-news-300")
+
 
 print("Init flask")
 app = Flask(__name__)
