@@ -88,6 +88,29 @@ Response should look like:
 You can also run the [test file](test.py) and test the API programmatically
 
 
+# Docker FastText REST API
+
+Command to setup a docker Postgre container found [here](https://sclorg.github.io/containers-doc/postgresql/9.4/).
+A second example is available [here](https://www.optimadata.nl/blogs/1/n8dyr5-how-to-run-postgres-on-docker-part-1)
+
+```shell scrit
+docker pull postgres:9.4
+```
+
+
+```shell scrit
+docker run -d -e POSTGRES_USER=w2v -e POSTGRES_PASSWORD=password123 --name w2v-postgres -p 5432:5432  postgres:9.4
+```
+
+FastText model build using [Crokage](https://github.com/muldon/CROKAGE-replication-package) [pre-processed data dump](http://lascam.facom.ufu.br/companion/crokage/dump2018crokagereplicationpackage.backup)
+
+
+
+
+
+
+
+
 ## Currently supported models
 
 * SO_vectors_200.bin - see [Word Embeddings for the Software Engineering Domain](https://zenodo.org/record/1199620#.YFEFlv4TGhg) `default`
