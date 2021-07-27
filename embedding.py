@@ -15,6 +15,8 @@ from gensim.models.fasttext import FastText, save_facebook_model, load_facebook_
 # from gensim.models import WordEmbeddingSimilarityIndex
 from gensim.similarities import SparseTermSimilarityMatrix, WordEmbeddingSimilarityIndex
 from gensim import corpora
+from scipy.spatial import distance
+
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html
 
@@ -98,7 +100,7 @@ class Word2Vec(object):
     def load(self, gensim_pre_trained_model="word2vec"):
         start = time.time()
         logging.info("Loading model")
-        self.model = api.load(gensim_pre_trained_model) # model = api.load("word2vec-google-news-300")
+        self.model = api.load(gensim_pre_trained_model)  # model = api.load("word2vec-google-news-300")
         end = time.time()
         logging.info(">> model loaded")
         logging.info(">> %s" % (end - start))
@@ -128,24 +130,30 @@ class SOWord2Vec(object):
         # result = x_vector.similarity(y_vector.vector)
         # return result
         stop_words = stopwords.words("english")
-
         sentence_x = [w for w in x.lower().split() if w not in stop_words]
         sentence_y = [w for w in y.lower().split() if w not in stop_words]
-        documents = [sentence_x, sentence_y]
-        dictionary = corpora.Dictionary(documents)
 
+        x_vec = self.avg_feature_vector(sentence_x, self.model, self.model.vector_size)
+        y_vec = self.avg_feature_vector(sentence_y, self.model, self.model.vector_size)
 
-        # Prepare the similarity matrix
-        similarity_index = WordEmbeddingSimilarityIndex(self.model)
-        similarity_matrix = SparseTermSimilarityMatrix(similarity_index, dictionary)
+        try:
+            cosine_similarity = np.inner(x_vec, y_vec) / (np.linalg.norm(x_vec) * np.linalg.norm(y_vec))
+            if math.isnan(cosine_similarity):
+                cosine_similarity = 0.
+        except:
+            cosine_similarity = 0.
+        return cosine_similarity
 
-        # Convert the sentences into bag-of-words vectors.
-        sentence_x = dictionary.doc2bow(sentence_x)
-        sentence_y = dictionary.doc2bow(sentence_y)
-
-        similarity = similarity_matrix.inner_product(sentence_x, sentence_y, normalized=(True, True))
-
-        return similarity
+    def avg_feature_vector(self, sentence, model, num_features):
+        feature_vec = np.zeros((num_features,), dtype='float32')
+        n_words = 0
+        for word in sentence:
+            if word in self.model:
+                feature_vec = np.add(feature_vec, model[word])
+                n_words += 1
+        if (n_words > 0):
+            feature_vec = np.divide(feature_vec, n_words)
+        return feature_vec
 
     def vector(self, x):
         x_vector = PhraseVector(x, model=self.model)
@@ -180,32 +188,32 @@ class SOFasttext(object):
         if not self.model:
             raise Exception("You cannot use a similarity function without a trained model")
 
-        # x = x.lower().split()
-        # y = y.lower().split()
-        # # Prepare a dictionary and a corpus.
-        # documents = [x, y]
-        # dictionary = corpora.Dictionary(documents)
-        #
-        # # Prepare the similarity matrix
-        # similarity_matrix = self.model.similarity_matrix(dictionary)
-        #
-        # # Convert the sentences into bag-of-words vectors.
-        # sent_1 = dictionary.doc2bow(x)
-        # sent_2 = dictionary.doc2bow(y)
-        #
-        # try:
-        #     result = similarity_matrix.inner_product(sent_1, sent_2, normalized=True)
-        # except Exception:
-        #     result = 0.0
-        # return result
+        stop_words = stopwords.words("english")
 
-        x_vector = PhraseVector(x, model=self.model, fasttext=True)
-        y_vector = PhraseVector(y, model=self.model, fasttext=True)
+        sentence_x = [w for w in x.lower().split() if w not in stop_words]
+        sentence_y = [w for w in y.lower().split() if w not in stop_words]
 
-        result = x_vector.similarity(y_vector.vector)
-        return result
+        x_vec = self.avg_feature_vector(sentence_x, self.model, self.model.vector_size)
+        y_vec = self.avg_feature_vector(sentence_y, self.model, self.model.vector_size)
 
+        try:
+            cosine_similarity = np.inner(x_vec, y_vec) / (np.linalg.norm(x_vec) * np.linalg.norm(y_vec))
+            if math.isnan(cosine_similarity):
+                cosine_similarity = 0.
+        except:
+            cosine_similarity = 0.
+        return cosine_similarity
 
+    def avg_feature_vector(self, sentence, model, num_features):
+
+        feature_vec = np.zeros((num_features,), dtype='float32')
+        n_words = 0
+        for word in sentence:
+            feature_vec = np.add(feature_vec, model.wv[word])
+            n_words += 1
+        if (n_words > 0):
+            feature_vec = np.divide(feature_vec, n_words)
+        return feature_vec
 
     def vector(self, x):
         x_vector = PhraseVector(x, model=self.model, fasttext=True)
@@ -221,11 +229,10 @@ class SOFasttext(object):
         logging.info(">> %s" % (end - start))
 
 
-# x = "Have you ever tried to used the method string.split(\"hello world\")"
-# y = "try using the string.split method"
+x = "Have you ever tried to used the method string.split(\"hello world\")"
+y = "try using the string.split method"
 #
-# w2v = SOFasttext()
-# w2v.load(file_name="SO_fasttext_vectors_200.bin")
+
 # print(w2v.similarity(x, y))
 #
 #
@@ -238,9 +245,28 @@ sentence_obama = 'Obama speaks to the media in Illinois'
 sentence_president = 'The president greets the press in Chicago'
 sentence_orange = 'Having a tough time finding an orange juice press machine?'
 
+# w2v = SOWord2Vec()
+# w2v.load(file_name="SO_vectors_200.bin")
 
-w2v = SOWord2Vec()
-w2v.load(file_name="SO_vectors_200.bin")
-
+w2v = SOFasttext()
+w2v.load(file_name="SO_fasttext_vectors_200.bin")
+print(w2v.similarity(x, y))
 print(w2v.similarity(sentence_obama, sentence_president))
 print(w2v.similarity(sentence_obama, sentence_orange))
+
+# using np inner_dot
+# SOWord2Vec()
+#       0.8183837
+#       0.40002513
+#       0.1951475
+# SOFasttext
+#       0.97848946
+#       0.9238482
+#       0.9784081
+
+#
+# using n_similarity <----- I think that this is more reasonable and similar to
+# 0.9784895
+# 0.9238482
+# 0.97840816
+#
