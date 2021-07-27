@@ -119,3 +119,5 @@ corpus.txt
 !**/models/*.pkl
 dump2018crokagereplicationpackage.backup
 SO_vectors_200.bin
+SO_fasttext_vectors_200.bin
+**/SO_fasttext_vectors_200.bin
