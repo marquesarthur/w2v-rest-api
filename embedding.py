@@ -229,8 +229,8 @@ class SOFasttext(object):
         logging.info(">> %s" % (end - start))
 
 
-x = "Have you ever tried to used the method string.split(\"hello world\")"
-y = "try using the string.split method"
+# x = "Have you ever tried to used the method string.split(\"hello world\")"
+# y = "try using the string.split method"
 #
 
 # print(w2v.similarity(x, y))
@@ -241,25 +241,29 @@ y = "try using the string.split method"
 # print(w2v.similarity(x, y))
 
 
-sentence_obama = 'Obama speaks to the media in Illinois'
-sentence_president = 'The president greets the press in Chicago'
-sentence_orange = 'Having a tough time finding an orange juice press machine?'
+# sentence_obama = 'Obama speaks to the media in Illinois'
+# sentence_president = 'The president greets the press in Chicago'
+# sentence_orange = 'Having a tough time finding an orange juice press machine?'
 
 # w2v = SOWord2Vec()
 # w2v.load(file_name="SO_vectors_200.bin")
 
-w2v = SOFasttext()
-w2v.load(file_name="SO_fasttext_vectors_200.bin")
-print(w2v.similarity(x, y))
-print(w2v.similarity(sentence_obama, sentence_president))
-print(w2v.similarity(sentence_obama, sentence_orange))
+# w2v = SOFasttext()
+# w2v.load(file_name="SO_fasttext_vectors_200.bin")
+# print(w2v.similarity(x, y))
+# print(w2v.similarity(sentence_obama, sentence_president))
+# print(w2v.similarity(sentence_obama, sentence_orange))
 
 # using np inner_dot
 # SOWord2Vec()
 #       0.8183837
 #       0.40002513
 #       0.1951475
-# SOFasttext
+# SOFasttext --- full
+#       0.6530203
+#       0.4777708
+#       0.37745786
+# SOFasttext --- small toy example
 #       0.97848946
 #       0.9238482
 #       0.9784081

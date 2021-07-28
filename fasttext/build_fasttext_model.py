@@ -40,12 +40,12 @@ class LossCallback(CallbackAny2Vec):
         self.start = time.time()
 
     def on_epoch_end(self, model):
-        loss = model.get_latest_training_loss()
+        # loss = model.get_latest_training_loss()
         end = time.time()
         hours, rem = divmod(end - self.start, 3600)
         minutes, seconds = divmod(rem, 60)
-        print('Loss after epoch {}: {:.8f}'.format(self.epoch, loss))
-        print("Time elapsed {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
+        # print('Loss after epoch {}: {:.8f}'.format(self.epoch, loss))
+        print("[{}] Time elapsed {:0>2}:{:0>2}:{:05.2f}".format(int(self.epoch), int(hours), int(minutes), seconds))
         self.epoch += 1
         self.start = time.time()
 
@@ -54,20 +54,29 @@ class LossCallback(CallbackAny2Vec):
 # these are the same parameters as R. Silva + computing training loss for logging purposes
 model = FastText(vector_size=vector_size, min_n=2, max_n=5, epochs=epoch)
 print('build vocab...')
+start = time.time()
 model.build_vocab(MyIter(input_corpus))
 total_examples = model.corpus_count
+end = time.time()
+hours, rem = divmod(end - start, 3600)
+minutes, seconds = divmod(rem, 60)
+print("Time elapsed {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
 
 print(model.corpus_count)
-print('train model...')
-model.train(MyIter(input_corpus), total_examples=total_examples, epochs=epoch, compute_loss=True,
-            callbacks=[LossCallback()])
+print('\n\ntrain model...')
+model.train(MyIter(input_corpus), total_examples=total_examples, epochs=epoch, callbacks=[LossCallback()])
 
 print(model.wv[' '])
 print(model.wv['use'])
 print(model.wv['even'])
 
-print('saving model...')
+print('\n\nsaving model...')
+start = time.time()
 save_facebook_model(model, model_bin)
+end = time.time()
+hours, rem = divmod(end - start, 3600)
+minutes, seconds = divmod(rem, 60)
+print("Time elapsed {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
 
 # load model?
 # print('loading saved model...')
