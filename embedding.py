@@ -229,8 +229,6 @@ class SOFasttext(object):
         logging.info(">> %s" % (end - start))
 
 
-# x = "Have you ever tried to used the method string.split(\"hello world\")"
-# y = "try using the string.split method"
 #
 
 # print(w2v.similarity(x, y))
@@ -240,16 +238,18 @@ class SOFasttext(object):
 # y = "nothing"
 # print(w2v.similarity(x, y))
 
-
+#
+# x = "Have you ever tried to used the method string.split(\"hello world\")"
+# y = "try using the string.split method"
 # sentence_obama = 'Obama speaks to the media in Illinois'
 # sentence_president = 'The president greets the press in Chicago'
 # sentence_orange = 'Having a tough time finding an orange juice press machine?'
-
+#
 # w2v = SOWord2Vec()
 # w2v.load(file_name="SO_vectors_200.bin")
-
-# w2v = SOFasttext()
-# w2v.load(file_name="SO_fasttext_vectors_200.bin")
+#
+# # w2v = SOFasttext()
+# # w2v.load(file_name="SO_fasttext_vectors_200.bin")
 # print(w2v.similarity(x, y))
 # print(w2v.similarity(sentence_obama, sentence_president))
 # print(w2v.similarity(sentence_obama, sentence_orange))

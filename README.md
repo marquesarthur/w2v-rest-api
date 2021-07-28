@@ -63,15 +63,20 @@ ___
 
 ## RUN
 
-Remember to remove old containers `docker rm w2v-rest`
+Remember to remove old containers
 
 ```shell script
+docker rm w2v-rest
 docker run --name w2v-rest -p 5001:5001 msarthur/w2v-rest
 ```
 
 ## Testing
 ```shell script
 curl -XGET 'http://localhost:5001/w2v/similarity?a=Have+you+ever+tried+to+used+the+method+string.split%28%22hello+world%22%29&b=try+using+the+string.split+method' | json_pp
+curl -XGET 'http://localhost:5001/w2v/similarity?a=Obama%20speaks%20to%20the%20media%20in%20Illinois&b=The%20president%20greets%20the%20press%20in%20Chicago' | json_pp
+curl -XGET 'http://localhost:5001/w2v/similarity?a=Obama%20speaks%20to%20the%20media%20in%20Illinois&b=Having%20a%20tough%20time%20finding%20an%20orange%20juice%20press%20machine%3F' | json_pp
+
+curl -XGET 'http://localhost:5001/w2v/similarity?a=these%20are%20very%20similar%20phrases&b=phrases%20that%20are%20very%20similar' | json_pp
 ```
 
 Response should look like:

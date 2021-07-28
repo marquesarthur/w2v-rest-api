@@ -40,9 +40,9 @@ def similarity_route():
     try:
         a = request.args.get("a")
         b = request.args.get("b")
-        y = clean_text(a)
-        x = clean_text(b)
-        sim = w2v.similarity(x, y)
+        # y = clean_text(a)
+        # x = clean_text(b)
+        sim = w2v.similarity(a, b)
         response['a'] = a
         response['b'] = b
         response['sim'] = str(sim)
